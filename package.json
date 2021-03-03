@@ -1,0 +1,37 @@
+{
+  "name": "rut-utils",
+  "version": "1.0.0",
+  "description": "A set of utilities for chilean RUTs",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zannisdf/rut-utils"
+  },
+  "author": "Giorgio Zanni <g.zanni@hotmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^26.6.3"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "node_modules"
+    ],
+    "watchPathIgnorePatterns": [
+      "node_modules"
+    ]
+  },
+  "keywords": [
+    "validador",
+    "rut",
+    "run",
+    "chile"
+  ]
+}
