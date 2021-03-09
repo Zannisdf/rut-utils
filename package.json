@@ -1,5 +1,5 @@
 {
-  "name": "rut-utils",
+  "name": "@gzanni/rut-utils",
   "version": "1.0.0",
   "description": "A set of utilities for chilean RUTs",
   "main": "index.js",
