@@ -1,6 +1,6 @@
 {
   "name": "@gzanni/rut-utils",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A set of utilities for chilean RUTs",
   "main": "index.js",
   "files": [
