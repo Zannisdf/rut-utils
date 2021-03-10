@@ -3,6 +3,13 @@ const STANDARD = 'standard' // 11.222.333-4
 const DASH_ONLY = 'dashOnly' // 11222333-4
 const NO_SYMBOLS = 'noSymbols' // 112223334
 
+/**
+ * 
+ * @param {string|number} input 
+ * @param {object} [options={}] 
+ * @param {'standard'|'any'|'dashOnly'|'noSymbols'} options.formatType - defaults to ``standard``
+ * @returns A detailed representation of the given input. 
+ */
 function toJSON(input, { formatType = STANDARD } = {}) {
   const { digit, serial } = split(removeInvalidChars(input))
 
@@ -15,8 +22,18 @@ function toJSON(input, { formatType = STANDARD } = {}) {
   }
 }
 
-// Format related functions
-
+/**
+ * 
+ * @param {string|number} input - Any string or number
+ * @param {'standard'|'dashOnly'|'noSymbols'} [formatType="standard"] - One of the listed strings. Defaults to ``standard``
+ * @returns {string} String formatted according to the ``formatType`` param.
+ * Removes any invalid character before applying the format.
+ * 
+ * @example
+ * format('108646292') // => '10.864.629-2'
+ * format('108646292', 'dashOnly') // => '10864629-2'
+ * format('10.864.629-2', 'noSymbols') // => '108646292'
+ */
 function format(input, formatType = STANDARD) {
   const FORMATTERS = {
     [STANDARD]: standardFormatter,
@@ -30,6 +47,47 @@ function format(input, formatType = STANDARD) {
 
   return hasMinLength(input) ? FORMATTERS.get(formatType)(split(input)) : input
 }
+
+/**
+ * 
+ * @param {string|number} input - Any string or number
+ * @param {'any'|'standard'|'dashOnly'|'noSymbols'} [formatType="any"] - One of the listed strings. Defaults to ``'any'``.
+ * @returns {boolean} Returns true when ``input`` matches the given ``formatType`` or any of them if ``formatType='any'`` is given, otherwise false.
+ * @example
+ * isFormatValid('108646292', 'standard') // => false
+ * isFormatValid('108646292', 'any') // => true
+ * isFormatValid('108646292', 'noSymbols') // => true
+ */
+ function isFormatValid(input, formatType = 'any') {
+  return getFormatExpressions(formatType).reduce(
+    (isValid, exp) => isValid || exp.test(input),
+    false
+  )
+}
+
+/**
+ * 
+ * @param {string|number} input 
+ * @returns {boolean} Returns true when the given input has only valid characters
+ * is of length two or greater and its digit is valid for the serial number.
+ * Does not validate neither max length nor input format.
+ * @example
+ * isValid('108646292') // => true
+ * isValid('10.864.629-2') // => true
+ * isValid('111') // => false
+ * isValid('1n1') // => false
+ */
+function isValid(input) {
+  const cleanInput = removeInvalidChars(input)
+
+  return (
+    hasOnlyValidChars(input) &&
+    hasMinLength(cleanInput) &&
+    isDigitValid(split(cleanInput))
+  )
+}
+
+// Format related functions
 
 function standardFormatter({ serial, digit }) {
   return `${formatWithSeparators(serial)}-${digit}`
@@ -60,13 +118,6 @@ function splitBySeparatorPosition(
   return splitBySeparatorPosition(serial.slice(breakpoint), terms)
 }
 
-function isFormatValid(input, formatType = 'any') {
-  return getFormatExpressions(formatType).reduce(
-    (isValid, exp) => isValid || exp.test(input),
-    false
-  )
-}
-
 function getFormatExpressions(formatType) {
   const FORMATS = {
     [STANDARD]: /^\d{1,3}(\.\d{3})+-[0-9Kk]$/,
@@ -83,16 +134,6 @@ function getFormatExpressions(formatType) {
 }
 
 // Validation related functions
-
-function isValid(input) {
-  const cleanInput = removeInvalidChars(input)
-
-  return (
-    hasOnlyValidChars(input) &&
-    hasMinLength(cleanInput) &&
-    isDigitValid(split(cleanInput))
-  )
-}
 
 function hasOnlyValidChars(input) {
   return !/[^0-9Kk\.-]/g.test(input)
@@ -144,6 +185,11 @@ function removeInvalidChars(input) {
   return String(input).replace(/[^0-9Kk]/g, '')
 }
 
+/**
+ * 
+ * @param {string} rut 
+ * @returns {{serial: string, digit: string}}
+ */
 function split(rut) {
   const lastPosition = rut.length - 1
 
