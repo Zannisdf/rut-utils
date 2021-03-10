@@ -385,7 +385,7 @@ describe('format(input, formatType)', () => {
   })
 })
 
-describe('toJSON(input, options)', () => {
+describe('toJSON(input, formatType)', () => {
   it('returns an object with the rut details', () => {
     // Valid rut, valid format
     expect(toJSON('10.864.629-2')).toStrictEqual({
@@ -426,23 +426,23 @@ describe('toJSON(input, options)', () => {
 
   it('applies the `options.formatType` format and format validation', () => {
     // Valid formats
-    expect(toJSON('10864629-2', { formatType: 'dashOnly' })).toMatchObject({
+    expect(toJSON('10864629-2', 'dashOnly')).toMatchObject({
       formattedValue: '10864629-2',
       isFormatValid: true,
     })
 
-    expect(toJSON('108646292', { formatType: 'noSymbols' })).toMatchObject({
+    expect(toJSON('108646292', 'noSymbols')).toMatchObject({
       formattedValue: '108646292',
       isFormatValid: true,
     })
 
     // Invalid formats
-    expect(toJSON('10.864.629-2', { formatType: 'dashOnly' })).toMatchObject({
+    expect(toJSON('10.864.629-2', 'dashOnly')).toMatchObject({
       formattedValue: '10864629-2',
       isFormatValid: false,
     })
 
-    expect(toJSON('10.864.629-2', { formatType: 'noSymbols' })).toMatchObject({
+    expect(toJSON('10.864.629-2', 'noSymbols')).toMatchObject({
       formattedValue: '108646292',
       isFormatValid: false,
     })

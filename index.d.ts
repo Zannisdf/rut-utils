@@ -1,19 +1,19 @@
 /**
  *
  * @param {string|number} input
- * @param {object} [options={}]
- * @param {'standard'|'any'|'dashOnly'|'noSymbols'} options.formatType - defaults to ``standard``
+ * @param {string} [formatType='any']
  * @returns A detailed representation of the given input.
  */
-export function toJSON(input: string | number, { formatType }?: {
-    formatType: 'standard' | 'any' | 'dashOnly' | 'noSymbols';
-}): {
-    digit: string;
-    formattedValue: string;
-    isFormatValid: boolean;
-    isValid: boolean;
-    serial: string;
-};
+export function toJSON(
+  input: string | number,
+  formatType?: 'standard' | 'any' | 'dashOnly' | 'noSymbols'
+): {
+  digit: string
+  formattedValue: string
+  isFormatValid: boolean
+  isValid: boolean
+  serial: string
+}
 /**
  *
  * @param {string|number} input - Any string or number
@@ -26,7 +26,10 @@ export function toJSON(input: string | number, { formatType }?: {
  * format('108646292', 'dashOnly') // => '10864629-2'
  * format('10.864.629-2', 'noSymbols') // => '108646292'
  */
-export function format(input: string | number, formatType?: 'standard' | 'dashOnly' | 'noSymbols'): string;
+export function format(
+  input: string | number,
+  formatType?: 'standard' | 'dashOnly' | 'noSymbols'
+): string
 /**
  *
  * @param {string|number} input - Any string or number
@@ -37,7 +40,10 @@ export function format(input: string | number, formatType?: 'standard' | 'dashOn
  * isFormatValid('108646292', 'any') // => true
  * isFormatValid('108646292', 'noSymbols') // => true
  */
-export function isFormatValid(input: string | number, formatType?: 'any' | 'standard' | 'dashOnly' | 'noSymbols'): boolean;
+export function isFormatValid(
+  input: string | number,
+  formatType?: 'any' | 'standard' | 'dashOnly' | 'noSymbols'
+): boolean
 /**
  *
  * @param {string|number} input
@@ -50,4 +56,4 @@ export function isFormatValid(input: string | number, formatType?: 'any' | 'stan
  * isValid('111') // => false
  * isValid('1n1') // => false
  */
-export function isValid(input: string | number): boolean;
+export function isValid(input: string | number): boolean

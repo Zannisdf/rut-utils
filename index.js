@@ -1,19 +1,18 @@
 'use strict'
 
 // Valid rut formats
-const STANDARD = "standard"; // 11.222.333-4
-const DASH_ONLY = "dashOnly"; // 11222333-4
-const NO_SYMBOLS = "noSymbols"; // 112223334
+const STANDARD = 'standard' // 11.222.333-4
+const DASH_ONLY = 'dashOnly' // 11222333-4
+const NO_SYMBOLS = 'noSymbols' // 112223334
 
 /**
  *
  * @param {string|number} input
- * @param {object} [options={}]
- * @param {'standard'|'any'|'dashOnly'|'noSymbols'} options.formatType - defaults to ``standard``
+ * @param {string} [formatType='any']
  * @returns A detailed representation of the given input.
  */
-function toJSON(input, { formatType = STANDARD } = {}) {
-  const { digit, serial } = split(removeInvalidChars(input));
+function toJSON(input, formatType = STANDARD) {
+  const { digit, serial } = split(removeInvalidChars(input))
 
   return {
     digit,
@@ -21,7 +20,7 @@ function toJSON(input, { formatType = STANDARD } = {}) {
     isFormatValid: isFormatValid(input, formatType),
     isValid: isValid(input),
     serial,
-  };
+  }
 }
 
 /**
@@ -42,12 +41,12 @@ function format(input, formatType = STANDARD) {
     [DASH_ONLY]: dashOnlyFormatter,
     [NO_SYMBOLS]: noSymbolsFormatter,
     get: function (key) {
-      return this[key] || this[STANDARD];
+      return this[key] || this[STANDARD]
     },
-  };
-  input = removeInvalidChars(input);
+  }
+  input = removeInvalidChars(input)
 
-  return hasMinLength(input) ? FORMATTERS.get(formatType)(split(input)) : input;
+  return hasMinLength(input) ? FORMATTERS.get(formatType)(split(input)) : input
 }
 
 /**
@@ -60,11 +59,11 @@ function format(input, formatType = STANDARD) {
  * isFormatValid('108646292', 'any') // => true
  * isFormatValid('108646292', 'noSymbols') // => true
  */
-function isFormatValid(input, formatType = "any") {
+function isFormatValid(input, formatType = 'any') {
   return getFormatExpressions(formatType).reduce(
     (isValid, exp) => isValid || exp.test(input),
     false
-  );
+  )
 }
 
 /**
@@ -80,31 +79,31 @@ function isFormatValid(input, formatType = "any") {
  * isValid('1n1') // => false
  */
 function isValid(input) {
-  const cleanInput = removeInvalidChars(input);
+  const cleanInput = removeInvalidChars(input)
 
   return (
     hasOnlyValidChars(input) &&
     hasMinLength(cleanInput) &&
     isDigitValid(split(cleanInput))
-  );
+  )
 }
 
 // Format related functions
 
 function standardFormatter({ serial, digit }) {
-  return `${formatWithSeparators(serial)}-${digit}`;
+  return `${formatWithSeparators(serial)}-${digit}`
 }
 
 function dashOnlyFormatter({ serial, digit }) {
-  return `${serial}-${digit}`;
+  return `${serial}-${digit}`
 }
 
 function noSymbolsFormatter({ serial, digit }) {
-  return `${serial}${digit}`;
+  return `${serial}${digit}`
 }
 
 function formatWithSeparators(serial) {
-  return splitBySeparatorPosition(serial).join(".");
+  return splitBySeparatorPosition(serial).join('.')
 }
 
 function splitBySeparatorPosition(
@@ -113,11 +112,11 @@ function splitBySeparatorPosition(
   breakpoint = serial.length % 3 || 3
 ) {
   if (serial.length == 0) {
-    return terms;
+    return terms
   }
 
-  terms.push(serial.slice(0, breakpoint));
-  return splitBySeparatorPosition(serial.slice(breakpoint), terms);
+  terms.push(serial.slice(0, breakpoint))
+  return splitBySeparatorPosition(serial.slice(breakpoint), terms)
 }
 
 function getFormatExpressions(formatType) {
@@ -126,65 +125,65 @@ function getFormatExpressions(formatType) {
     [DASH_ONLY]: /^\d{1,3}(\d{3})+-[0-9Kk]$/,
     [NO_SYMBOLS]: /^\d+[0-9Kk]$/,
     get: function (key) {
-      return this[key] || this[STANDARD];
+      return this[key] || this[STANDARD]
     },
-  };
+  }
 
-  return formatType == "any"
+  return formatType == 'any'
     ? [STANDARD, DASH_ONLY, NO_SYMBOLS].map((type) => FORMATS[type])
-    : [FORMATS.get(formatType)];
+    : [FORMATS.get(formatType)]
 }
 
 // Validation related functions
 
 function hasOnlyValidChars(input) {
-  return !/[^0-9Kk\.-]/g.test(input);
+  return !/[^0-9Kk\.-]/g.test(input)
 }
 
 function hasMinLength(rut) {
-  return rut.length > 1;
+  return rut.length > 1
 }
 
 function isDigitValid({ serial, digit }) {
-  return getValidDigit(serial) == digit.toUpperCase();
+  return getValidDigit(serial) == digit.toUpperCase()
 }
 
 function getValidDigit(serial) {
-  return parseNumericToDigit(calculateNumericDigit(serial));
+  return parseNumericToDigit(calculateNumericDigit(serial))
 }
 
 // These constants are part of the algorithm definition. See https://es.wikipedia.org/wiki/Rol_%C3%9Anico_Tributario
 function calculateNumericDigit(serial) {
-  const MODULE = 11;
-  const MIN_FACTOR = 2;
-  const MAX_FACTOR = 7;
+  const MODULE = 11
+  const MIN_FACTOR = 2
+  const MAX_FACTOR = 7
 
-  const { sum } = serial.split("").reduceRight(
+  const { sum } = serial.split('').reduceRight(
     (state, char) => ({
       sum: state.sum + Number(char) * state.factor,
       factor: state.factor == MAX_FACTOR ? MIN_FACTOR : state.factor + 1,
     }),
     { sum: 0, factor: MIN_FACTOR }
-  );
+  )
 
-  return MODULE - (sum % MODULE);
+  return MODULE - (sum % MODULE)
 }
 
 function parseNumericToDigit(num) {
   switch (num) {
     case 10:
-      return "K";
+      return 'K'
     case 11:
-      return "0";
+      return '0'
     default:
-      return Number.isNaN(num) ? null : String(num);
+      return Number.isNaN(num) ? null : String(num)
   }
 }
 
 // Utils
 
 function removeInvalidChars(input) {
-  return String(input).replace(/[^0-9Kk]/g, "");
+  return String(input).replace(/[^0-9Kk]/g, '')
 }
 
 /**
@@ -193,19 +192,19 @@ function removeInvalidChars(input) {
  * @returns {{serial: string, digit: string}}
  */
 function split(rut) {
-  const lastPosition = rut.length - 1;
+  const lastPosition = rut.length - 1
 
   return {
     serial: rut.slice(0, lastPosition),
     digit: rut.slice(lastPosition),
-  };
+  }
 }
 
 const rutUtils = {
   format,
   isFormatValid,
   isValid,
-  toJSON
+  toJSON,
 }
 
 module.exports = rutUtils
