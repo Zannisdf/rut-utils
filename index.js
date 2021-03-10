@@ -12,7 +12,7 @@ const NO_SYMBOLS = "noSymbols"; // 112223334
  * @param {'standard'|'any'|'dashOnly'|'noSymbols'} options.formatType - defaults to ``standard``
  * @returns A detailed representation of the given input.
  */
-export function toJSON(input, { formatType = STANDARD } = {}) {
+function toJSON(input, { formatType = STANDARD } = {}) {
   const { digit, serial } = split(removeInvalidChars(input));
 
   return {
@@ -36,7 +36,7 @@ export function toJSON(input, { formatType = STANDARD } = {}) {
  * format('108646292', 'dashOnly') // => '10864629-2'
  * format('10.864.629-2', 'noSymbols') // => '108646292'
  */
-export function format(input, formatType = STANDARD) {
+function format(input, formatType = STANDARD) {
   const FORMATTERS = {
     [STANDARD]: standardFormatter,
     [DASH_ONLY]: dashOnlyFormatter,
@@ -60,7 +60,7 @@ export function format(input, formatType = STANDARD) {
  * isFormatValid('108646292', 'any') // => true
  * isFormatValid('108646292', 'noSymbols') // => true
  */
-export function isFormatValid(input, formatType = "any") {
+function isFormatValid(input, formatType = "any") {
   return getFormatExpressions(formatType).reduce(
     (isValid, exp) => isValid || exp.test(input),
     false
@@ -79,7 +79,7 @@ export function isFormatValid(input, formatType = "any") {
  * isValid('111') // => false
  * isValid('1n1') // => false
  */
-export function isValid(input) {
+function isValid(input) {
   const cleanInput = removeInvalidChars(input);
 
   return (
